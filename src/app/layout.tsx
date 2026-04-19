@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vibedemo — Next.js & Supabase",
-  description: "Demo-Stack: Next.js auf Vercel mit Supabase",
+  title: "Willkommen — Vibedemo",
+  description: "Willkommensseite für das Team — Vibecoding-Demo",
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
       lang="de"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );
 }

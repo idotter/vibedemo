@@ -1,69 +1,64 @@
 import Link from "next/link";
-import { getSupabaseAnonKey, getSupabaseUrl } from "@/utils/supabase/env";
 
 export default function Home() {
-  const supabaseReady = Boolean(getSupabaseUrl() && getSupabaseAnonKey());
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-950 dark:to-black">
-      <main className="mx-auto flex max-w-2xl flex-col gap-10 px-6 py-20">
-        <header className="space-y-3">
-          <p className="text-sm font-medium uppercase tracking-wide text-zinc-500">Vibecoding-Demo</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Next.js · Vercel · Supabase
-          </h1>
-          <p className="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Lokales Repo, Deployment auf Vercel, Postgres und API über die Supabase-Marketplace-Integration.
-          </p>
-        </header>
+    <div className="relative min-h-screen overflow-hidden bg-[#f7f4ef] text-stone-900 dark:bg-[#0a0908] dark:text-stone-100">
+      {/* Sanfter Hintergrund & Licht */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(217,119,87,0.22),transparent),radial-gradient(ellipse_60%_40%_at_100%_50%,rgba(120,113,108,0.12),transparent),radial-gradient(ellipse_50%_35%_at_0%_80%,rgba(217,119,87,0.14),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(251,146,60,0.15),transparent),radial-gradient(ellipse_55%_40%_at_100%_40%,rgba(168,162,158,0.12),transparent),radial-gradient(ellipse_45%_30%_at_0%_90%,rgba(251,146,60,0.08),transparent)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.35] dark:opacity-[0.2]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='2' cy='2' r='1' fill='%2378716f' fill-opacity='0.35'/%3E%3C/svg%3E")`,
+        }}
+      />
 
-        <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Status</h2>
-          <dl className="mt-4 space-y-3 text-sm">
-            <div className="flex justify-between gap-4">
-              <dt className="text-zinc-500">Umgebungsvariablen (lokal)</dt>
-              <dd>
-                {supabaseReady ? (
-                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">
-                    Supabase erkannt
-                  </span>
-                ) : (
-                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-900 dark:bg-amber-900/40 dark:text-amber-100">
-                    Noch kein env pull
-                  </span>
-                )}
-              </dd>
-            </div>
-          </dl>
-          <div className="mt-6 flex flex-wrap gap-3">
+      <main className="relative z-10 mx-auto flex min-h-screen max-w-4xl flex-col justify-center px-6 py-16 sm:px-10 sm:py-24">
+        <p className="font-mono text-xs font-medium uppercase tracking-[0.28em] text-stone-500 dark:text-stone-400">
+          Vibedemo
+        </p>
+
+        <h1 className="mt-6 font-sans text-5xl font-semibold leading-[1.05] tracking-tight sm:text-7xl sm:leading-[1.02]">
+          <span className="block text-stone-800 dark:text-stone-100">Hallo</span>
+          <span className="relative mt-1 inline-block">
+            <span className="relative z-10 bg-gradient-to-r from-[#c45c3e] via-[#d97757] to-[#b45309] bg-clip-text text-transparent dark:from-[#fb923c] dark:via-[#fdba74] dark:to-[#fcd34d]">
+              Team
+            </span>
+            <span
+              aria-hidden
+              className="absolute -bottom-1 left-0 h-3 w-full skew-y-[-0.5deg] rounded-sm bg-[#d97757]/25 dark:bg-[#fb923c]/20 sm:-bottom-2 sm:h-4"
+            />
+          </span>
+        </h1>
+
+        <p className="mt-8 max-w-lg text-lg leading-relaxed text-stone-600 dark:text-stone-400 sm:text-xl">
+          Schön, dass ihr da seid. Diese Seite ist der Auftakt für unsere gemeinsame Session — ruhig,
+          klar und ohne Ablenkung. Als Nächstes kümmern wir uns um die Datenbank, wenn ihr soweit
+          seid.
+        </p>
+
+        <div className="mt-12 flex flex-wrap items-center gap-4">
+          <span className="inline-flex h-px w-12 bg-stone-300 dark:bg-stone-600" />
+          <p className="text-sm text-stone-500 dark:text-stone-500">
+            Viel Erfolg und gutes Vibecoding.
+          </p>
+        </div>
+
+        <footer className="mt-20 border-t border-stone-200/80 pt-8 dark:border-stone-800/80">
+          <p className="text-xs text-stone-500 dark:text-stone-500">
+            Hinweis für später:{" "}
             <Link
               href="/notes"
-              className="inline-flex items-center justify-center rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
+              className="font-medium text-[#b45309] underline decoration-[#b45309]/35 underline-offset-4 transition hover:decoration-[#b45309] dark:text-[#fdba74] dark:decoration-[#fdba74]/35 dark:hover:decoration-[#fdba74]"
             >
-              Notes aus Supabase laden
-            </Link>
-          </div>
-        </section>
-
-        <section className="space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
-          <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Ablauf nach dem Klonen</h2>
-          <ol className="list-decimal space-y-2 pl-5">
-            <li>
-              <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">npx vercel link</code> und Projekt wählen
-            </li>
-            <li>
-              Supabase über Vercel Marketplace mit dem Projekt verbinden, dann{" "}
-              <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">npx vercel env pull .env.development.local</code>
-            </li>
-            <li>
-              SQL aus <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">supabase/init-notes.sql</code> im Supabase SQL Editor ausführen
-            </li>
-            <li>
-              <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">npm run dev</code> und{" "}
-              <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">/notes</code> prüfen
-            </li>
-          </ol>
-        </section>
+              Daten-Demo (/notes)
+            </Link>{" "}
+            — erst nach Supabase-Setup sinnvoll.
+          </p>
+        </footer>
       </main>
     </div>
   );
