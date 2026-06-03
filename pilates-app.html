@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pilates – Übungsbibliothek</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  [x-cloak] { display: none !important; }
+  .chip { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium; }
+</style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-rose-50 via-white to-sky-50 text-slate-800">
+<main class="mx-auto max-w-5xl px-4 py-8">
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Pilates – Übungsbibliothek</h1>
+    <p class="mt-2 text-slate-600">Klassische Matten-Pilates-Übungen, gemischt über alle Levels. Filtere nach Level oder Zielbereich.</p>
+  </header>
+
+  <section class="mb-6 grid gap-4 sm:grid-cols-3">
+    <div>
+      <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Suche</label>
+      <input id="search" type="search" placeholder="Übung suchen…"
+        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-rose-400 focus:outline-none focus:ring-1 focus:ring-rose-400" />
+    </div>
+    <div>
+      <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Level</label>
+      <select id="levelFilter" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-rose-400 focus:outline-none focus:ring-1 focus:ring-rose-400">
+        <option value="">Alle Levels</option>
+        <option value="Anfänger">Anfänger</option>
+        <option value="Mittelstufe">Mittelstufe</option>
+        <option value="Fortgeschritten">Fortgeschritten</option>
+      </select>
+    </div>
+    <div>
+      <label class="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Zielbereich</label>
+      <select id="areaFilter" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-rose-400 focus:outline-none focus:ring-1 focus:ring-rose-400">
+        <option value="">Alle Bereiche</option>
+      </select>
+    </div>
+  </section>
+
+  <div id="meta" class="mb-4 text-sm text-slate-500"></div>
+
+  <section id="list" class="grid gap-4 sm:grid-cols-2"></section>
+
+  <div id="empty" class="hidden rounded-xl border border-dashed border-slate-300 bg-white/60 p-8 text-center text-slate-500">
+    Keine Übungen gefunden. Passe die Filter an.
+  </div>
+
+  <footer class="mt-12 text-center text-xs text-slate-500">
+    Hinweis: Bei Schmerzen oder gesundheitlichen Einschränkungen bitte ärztlich oder physiotherapeutisch abklären.
+  </footer>
+</main>
+
+<script>
+  const exercises = [
+    {
+      name: "The Hundred",
+      level: "Mittelstufe",
+      area: "Core",
+      duration: "ca. 1 Min.",
+      description: "Klassische Aufwärmübung. In Rückenlage Oberkörper und Beine anheben, Arme neben dem Körper kräftig auf und ab pumpen – 5× einatmen, 5× ausatmen, insgesamt 100 Atemzüge.",
+      tips: "Unteren Rücken in die Matte drücken. Beine nur so tief senken, wie der Rücken stabil bleibt."
+    },
+    {
+      name: "Roll Up",
+      level: "Mittelstufe",
+      area: "Core",
+      duration: "8–10 Wdh.",
+      description: "Aus Rückenlage mit gestreckten Armen über dem Kopf Wirbel für Wirbel kontrolliert bis zum Vorbeugen aufrollen und langsam wieder zurück.",
+      tips: "Kein Schwung nutzen. Kinn leicht Richtung Brust, Bauchnabel zur Wirbelsäule."
+    },
+    {
+      name: "Single Leg Circles",
+      level: "Anfänger",
+      area: "Hüfte / Core",
+      duration: "je 5× pro Richtung",
+      description: "In Rückenlage ein Bein senkrecht strecken, mit kontrollierten kleinen Kreisen zeichnen. Becken bleibt stabil.",
+      tips: "Kreisgrösse an die Stabilität des Beckens anpassen – lieber kleiner und sauber."
+    },
+    {
+      name: "Rolling Like a Ball",
+      level: "Anfänger",
+      area: "Core / Balance",
+      duration: "6–8 Wdh.",
+      description: "Im Sitzen die Knie zur Brust ziehen, kompakte Kugelform bilden und kontrolliert nach hinten rollen – auf Schulterblätter, nicht auf Nacken – und zurück in Balance.",
+      tips: "Rundrücken halten, Kopf eingezogen. Atmung: einatmen zurück, ausatmen hoch."
+    },
+    {
+      name: "Single Leg Stretch",
+      level: "Anfänger",
+      area: "Core",
+      duration: "je 8–10 Wdh.",
+      description: "Rückenlage, Kopf/Schultern gehoben. Abwechselnd ein Knie zur Brust ziehen, das andere Bein schräg nach oben strecken. Hände führen das gebeugte Bein.",
+      tips: "Bauchdecke flach halten, Ellbogen weit öffnen."
+    },
+    {
+      name: "Double Leg Stretch",
+      level: "Mittelstufe",
+      area: "Core",
+      duration: "6–8 Wdh.",
+      description: "Aus der Position des Single Leg Stretch beide Beine und Arme gleichzeitig strecken (Arme nach hinten über den Kopf, Beine schräg hoch), dann zurück in die Kompaktform.",
+      tips: "Schulterblätter bleiben gehoben, Lendenwirbelsäule gedrückt an die Matte."
+    },
+    {
+      name: "Single Straight Leg Stretch",
+      level: "Mittelstufe",
+      area: "Core / Hamstrings",
+      duration: "je 6–8 Wdh.",
+      description: "Rückenlage, Kopf gehoben, Beine gestreckt. Abwechselnd ein Bein Richtung Gesicht ziehen (mit Händen an Wade/Knöchel), das andere knapp über dem Boden.",
+      tips: "Hüfte bleibt neutral. Zug nur sanft, nicht reissen."
+    },
+    {
+      name: "Criss-Cross",
+      level: "Mittelstufe",
+      area: "Schräge Bauchmuskeln",
+      duration: "je 8 Wdh.",
+      description: "Rückenlage, Hände hinter dem Kopf, Beine in Tabletop. Ellbogen abwechselnd zum gegenüberliegenden Knie rotieren, anderes Bein strecken.",
+      tips: "Rotation aus dem Rumpf, nicht aus dem Hals. Ellbogen bleiben weit."
+    },
+    {
+      name: "Spine Stretch Forward",
+      level: "Anfänger",
+      area: "Rücken / Hamstrings",
+      duration: "5–6 Wdh.",
+      description: "Langsitz mit leicht geöffneten Beinen, Arme nach vorne. Wirbel für Wirbel nach vorne rollen, Bauch einziehen, dann aufrichten.",
+      tips: "Sitzbeinhöcker bleiben auf der Matte. Kein Hohlkreuz beim Aufrichten."
+    },
+    {
+      name: "Saw",
+      level: "Mittelstufe",
+      area: "Rücken / Schräge Bauchmuskeln",
+      duration: "je 3–4 Wdh.",
+      description: "Langsitz, Beine hüftbreit, Arme seitlich gestreckt. Rumpf rotieren und mit der kleinen Fingerseite zur gegenüberliegenden Fussspitze 'sägen', gegenüberliegender Arm zieht nach hinten.",
+      tips: "Becken bleibt fixiert. Länge in der Wirbelsäule vor der Beugung."
+    },
+    {
+      name: "Open Leg Rocker",
+      level: "Fortgeschritten",
+      area: "Core / Balance",
+      duration: "4–6 Wdh.",
+      description: "Im Sitzen beide Beine an den Knöcheln greifen und in V-Position anheben, nach hinten rollen bis auf die Schulterblätter und kontrolliert zurück in die Balance.",
+      tips: "Nicht auf den Nacken rollen. Beine strecken nur so weit, wie das Becken aufgerichtet bleibt."
+    },
+    {
+      name: "Corkscrew",
+      level: "Fortgeschritten",
+      area: "Core",
+      duration: "3–5 Wdh.",
+      description: "Rückenlage, Beine gestreckt nach oben. Beide Beine gemeinsam kreisen lassen – eine Seite runter, Kreis nach unten, andere Seite hoch.",
+      tips: "Nur so weit, wie der untere Rücken in der Matte bleibt. Arme drücken stabil in die Matte."
+    },
+    {
+      name: "Swan (Prep)",
+      level: "Anfänger",
+      area: "Rückenstrecker",
+      duration: "5–6 Wdh.",
+      description: "Bauchlage, Hände unter den Schultern. Brustkorb Wirbel für Wirbel anheben, Gesäss und Beine bleiben entspannt am Boden.",
+      tips: "Schultern von den Ohren weg. Nacken lang, kein Überstrecken."
+    },
+    {
+      name: "Single Leg Kick",
+      level: "Anfänger",
+      area: "Rücken / Hamstrings",
+      duration: "je 2× 8 Wdh.",
+      description: "Bauchlage, auf Unterarme gestützt. Abwechselnd Ferse zum Gesäss kicken (doppelter Puls), Oberkörper bleibt lang und aufgerichtet.",
+      tips: "Bauch bleibt aktiv, kein Durchhängen im unteren Rücken."
+    },
+    {
+      name: "Double Leg Kick",
+      level: "Mittelstufe",
+      area: "Rücken / Beinrückseite",
+      duration: "3–5 Wdh.",
+      description: "Bauchlage, Hände hinter dem Rücken verschränkt. Beide Fersen 3× zum Gesäss pulsen, dann Oberkörper heben und Arme nach hinten strecken.",
+      tips: "Bewegung fliessend. Nur so hoch heben, wie der Lendenbereich sich gut anfühlt."
+    },
+    {
+      name: "Teaser",
+      level: "Fortgeschritten",
+      area: "Core",
+      duration: "3–5 Wdh.",
+      description: "Aus Rückenlage Beine und Oberkörper gleichzeitig in eine V-Position rollen, Arme parallel zu den Beinen strecken, dann kontrolliert zurück.",
+      tips: "Langsam aufbauen: Erst nur Oberkörper, dann beide Elemente kombinieren."
+    },
+    {
+      name: "Side Kick",
+      level: "Anfänger",
+      area: "Hüfte / Gesäss",
+      duration: "je 8–10 Wdh.",
+      description: "Seitenlage, Körper lang, Kopf auf dem unteren Arm abgestützt. Oberes Bein nach vorne und hinten schwingen, ohne das Becken zu kippen.",
+      tips: "Rumpf bleibt ruhig – die Bewegung kommt nur aus der Hüfte."
+    },
+    {
+      name: "Swimming",
+      level: "Anfänger",
+      area: "Rücken / Gesäss",
+      duration: "20–30 Sek.",
+      description: "Bauchlage, Arme und Beine lang. Abwechselnd gegenüberliegenden Arm und Bein anheben in schneller, rhythmischer Bewegung.",
+      tips: "Bauch bleibt leicht aktiv, Hals in Verlängerung der Wirbelsäule."
+    },
+    {
+      name: "Bridge",
+      level: "Anfänger",
+      area: "Gesäss / Core",
+      duration: "6–8 Wdh.",
+      description: "Rückenlage, Beine aufgestellt, hüftbreit. Wirbel für Wirbel das Becken anheben, kurz halten, kontrolliert zurückrollen.",
+      tips: "Knie bleiben parallel, Gesäss und hintere Oberschenkel aktivieren."
+    },
+    {
+      name: "Seal",
+      level: "Anfänger",
+      area: "Core / Balance",
+      duration: "6–8 Wdh.",
+      description: "Im Sitzen Fusssohlen zusammen, Hände zwischen den Knien greifen. In kompakter Form zurückrollen, 3× klatschen (Füsse), wieder hoch in Balance.",
+      tips: "Kleine, kontrollierte Bewegung. Rücken rund, Kinn zur Brust."
+    },
+    {
+      name: "Leg Pull Front",
+      level: "Fortgeschritten",
+      area: "Ganzkörper / Plank",
+      duration: "je 3–5 Wdh.",
+      description: "Aus hoher Plank abwechselnd ein Bein gestreckt anheben, Fuss flexen, zurück. Schultern über den Handgelenken, Körper eine Linie.",
+      tips: "Becken stabil halten, kein Absacken in den unteren Rücken."
+    },
+    {
+      name: "Pilates Push-up",
+      level: "Fortgeschritten",
+      area: "Ganzkörper",
+      duration: "3–5 Wdh.",
+      description: "Aus dem Stand Wirbel für Wirbel nach vorne rollen, mit den Händen nach vorne 'wandern' bis Plank, 3 Liegestütze, zurück wandern und aufrichten.",
+      tips: "Kraft aus der Körpermitte. Ellbogen eng am Körper beim Liegestütz."
+    }
+  ];
+
+  const listEl = document.getElementById("list");
+  const emptyEl = document.getElementById("empty");
+  const metaEl = document.getElementById("meta");
+  const searchEl = document.getElementById("search");
+  const levelEl = document.getElementById("levelFilter");
+  const areaEl = document.getElementById("areaFilter");
+
+  const levelStyles = {
+    "Anfänger":        "bg-emerald-100 text-emerald-800",
+    "Mittelstufe":     "bg-amber-100 text-amber-800",
+    "Fortgeschritten": "bg-rose-100 text-rose-800",
+  };
+
+  function populateAreaFilter() {
+    const areas = [...new Set(exercises.map(e => e.area))].sort();
+    areas.forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a;
+      opt.textContent = a;
+      areaEl.appendChild(opt);
+    });
+  }
+
+  function render() {
+    const q = searchEl.value.trim().toLowerCase();
+    const level = levelEl.value;
+    const area = areaEl.value;
+
+    const filtered = exercises.filter(e => {
+      if (level && e.level !== level) return false;
+      if (area && e.area !== area) return false;
+      if (q && !(e.name.toLowerCase().includes(q) || e.description.toLowerCase().includes(q))) return false;
+      return true;
+    });
+
+    listEl.innerHTML = "";
+    filtered.forEach(e => {
+      const card = document.createElement("article");
+      card.className = "rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md";
+      card.innerHTML = `
+        <div class="mb-2 flex items-start justify-between gap-3">
+          <h2 class="text-lg font-semibold">${e.name}</h2>
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${levelStyles[e.level] || "bg-slate-100 text-slate-700"}">${e.level}</span>
+        </div>
+        <div class="mb-3 flex flex-wrap gap-2 text-xs text-slate-600">
+          <span class="inline-flex items-center rounded-full bg-sky-100 px-2.5 py-0.5 font-medium text-sky-800">${e.area}</span>
+          <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 font-medium text-slate-700">${e.duration}</span>
+        </div>
+        <p class="text-sm leading-relaxed text-slate-700">${e.description}</p>
+        <p class="mt-3 text-xs text-slate-500"><span class="font-semibold text-slate-600">Tipp:</span> ${e.tips}</p>
+      `;
+      listEl.appendChild(card);
+    });
+
+    emptyEl.classList.toggle("hidden", filtered.length > 0);
+    metaEl.textContent = `${filtered.length} von ${exercises.length} Übungen`;
+  }
+
+  populateAreaFilter();
+  [searchEl, levelEl, areaEl].forEach(el => el.addEventListener("input", render));
+  render();
+</script>
+</body>
+</html>

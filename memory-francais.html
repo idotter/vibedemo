@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Memory – Französisch Grundwortschatz</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .card {
+    perspective: 1000px;
+    aspect-ratio: 3 / 4;
+  }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+  }
+  .card.flipped .card-inner,
+  .card.matched .card-inner {
+    transform: rotateY(180deg);
+  }
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    padding: 0.5rem;
+    text-align: center;
+  }
+  .card-back {
+    transform: rotateY(180deg);
+  }
+  .card.matched .card-face {
+    opacity: 0.55;
+  }
+  @keyframes pop {
+    0% { transform: rotateY(180deg) scale(1); }
+    50% { transform: rotateY(180deg) scale(1.08); }
+    100% { transform: rotateY(180deg) scale(1); }
+  }
+  .card.matched .card-inner {
+    animation: pop 0.4s ease;
+  }
+</style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 text-slate-800">
+<main class="mx-auto max-w-5xl px-4 py-8">
+  <header class="mb-6 flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold sm:text-3xl">Memory – Französisch 🇫🇷 🇩🇪</h1>
+      <p class="text-sm text-slate-600">Finde die passenden Paare: französisches Wort → deutsche Übersetzung.</p>
+    </div>
+    <div class="flex items-center gap-4 text-sm">
+      <div class="rounded-lg bg-white px-3 py-2 shadow">Züge: <span id="moves" class="font-semibold">0</span></div>
+      <div class="rounded-lg bg-white px-3 py-2 shadow">Paare: <span id="pairs" class="font-semibold">0</span> / 12</div>
+      <button id="restart" class="rounded-lg bg-slate-800 px-4 py-2 font-medium text-white shadow hover:bg-slate-700">Neu starten</button>
+    </div>
+  </header>
+
+  <section id="board" class="grid grid-cols-4 gap-3 sm:grid-cols-6"></section>
+
+  <div id="win" class="mt-6 hidden rounded-xl bg-emerald-100 p-4 text-center text-emerald-900 shadow">
+    <p class="text-lg font-semibold">Bravo ! 🎉</p>
+    <p class="text-sm">Alle Paare gefunden in <span id="final-moves" class="font-semibold"></span> Zügen.</p>
+  </div>
+
+  <footer class="mt-8 text-center text-xs text-slate-500">
+    12 Paare · gemischter Grundwortschatz
+  </footer>
+</main>
+
+<script>
+  const pairs = [
+    { fr: "le chien",   de: "der Hund" },
+    { fr: "la maison",  de: "das Haus" },
+    { fr: "le pain",    de: "das Brot" },
+    { fr: "l'eau",      de: "das Wasser" },
+    { fr: "le soleil",  de: "die Sonne" },
+    { fr: "la lune",    de: "der Mond" },
+    { fr: "le livre",   de: "das Buch" },
+    { fr: "l'ami",      de: "der Freund" },
+    { fr: "la fleur",   de: "die Blume" },
+    { fr: "le chat",    de: "die Katze" },
+    { fr: "la pomme",   de: "der Apfel" },
+    { fr: "le ciel",    de: "der Himmel" },
+  ];
+
+  const board = document.getElementById("board");
+  const movesEl = document.getElementById("moves");
+  const pairsEl = document.getElementById("pairs");
+  const winEl = document.getElementById("win");
+  const finalMovesEl = document.getElementById("final-moves");
+  const restartBtn = document.getElementById("restart");
+
+  let state = { first: null, second: null, lock: false, moves: 0, found: 0 };
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildDeck() {
+    const cards = [];
+    pairs.forEach((p, idx) => {
+      cards.push({ id: idx, lang: "fr", text: p.fr });
+      cards.push({ id: idx, lang: "de", text: p.de });
+    });
+    return shuffle(cards);
+  }
+
+  function render() {
+    board.innerHTML = "";
+    const deck = buildDeck();
+    deck.forEach((card) => {
+      const el = document.createElement("button");
+      el.className = "card focus:outline-none focus:ring-2 focus:ring-slate-400 rounded-xl";
+      el.dataset.id = card.id;
+      el.dataset.lang = card.lang;
+      el.innerHTML = `
+        <div class="card-inner">
+          <div class="card-face card-front bg-gradient-to-br from-indigo-500 to-indigo-700 text-white text-2xl font-bold shadow">?</div>
+          <div class="card-face card-back ${card.lang === "fr" ? "bg-white text-indigo-800" : "bg-white text-emerald-800"} text-sm sm:text-base font-medium shadow border border-slate-200">
+            ${card.text}
+          </div>
+        </div>`;
+      el.addEventListener("click", () => onClick(el, card));
+      board.appendChild(el);
+    });
+  }
+
+  function onClick(el, card) {
+    if (state.lock) return;
+    if (el.classList.contains("flipped") || el.classList.contains("matched")) return;
+
+    el.classList.add("flipped");
+
+    if (!state.first) {
+      state.first = { el, card };
+      return;
+    }
+
+    state.second = { el, card };
+    state.moves += 1;
+    movesEl.textContent = state.moves;
+
+    const isMatch =
+      state.first.card.id === state.second.card.id &&
+      state.first.card.lang !== state.second.card.lang;
+
+    if (isMatch) {
+      state.first.el.classList.add("matched");
+      state.second.el.classList.add("matched");
+      state.found += 1;
+      pairsEl.textContent = state.found;
+      resetTurn();
+      if (state.found === pairs.length) {
+        finalMovesEl.textContent = state.moves;
+        winEl.classList.remove("hidden");
+      }
+    } else {
+      state.lock = true;
+      setTimeout(() => {
+        state.first.el.classList.remove("flipped");
+        state.second.el.classList.remove("flipped");
+        resetTurn();
+      }, 900);
+    }
+  }
+
+  function resetTurn() {
+    state.first = null;
+    state.second = null;
+    state.lock = false;
+  }
+
+  function restart() {
+    state = { first: null, second: null, lock: false, moves: 0, found: 0 };
+    movesEl.textContent = "0";
+    pairsEl.textContent = "0";
+    winEl.classList.add("hidden");
+    render();
+  }
+
+  restartBtn.addEventListener("click", restart);
+  render();
+</script>
+</body>
+</html>
